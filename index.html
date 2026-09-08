@@ -98,7 +98,7 @@
     /* ---------- content ---------- */
     .stage {
       position: relative;
-      z-index: 2;
+      z-index: 3;
       text-align: center;
       padding: 24px;
       display: flex;
@@ -165,6 +165,21 @@
       line-height: 1.5;
     }
 
+    /* bouncing DVD-style logo (sits above the gradient, behind the message) */
+    .dvd {
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 2;
+      width: clamp(118px, 17vw, 188px);
+      aspect-ratio: 4.09 / 1;
+      opacity: .6;
+      background-color: #3d7bff;   /* recolored by JS on each bounce */
+      -webkit-mask: url("/dvd.png") center / contain no-repeat;
+              mask: url("/dvd.png") center / contain no-repeat;
+      pointer-events: none;
+      will-change: transform;
+    }
+
     /* ---------- keyframes ---------- */
     @keyframes rise  { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
     @keyframes hue   { to { background-position: 300% 0; } }
@@ -184,6 +199,7 @@
     <span class="orb orb-b"></span>
   </div>
   <div class="vignette"></div>
+  <div class="dvd" id="dvd" aria-hidden="true"></div>
 
   <main class="stage">
     <img id="logo" class="logo" src="logo.png" alt="BOUPROD" />
@@ -211,6 +227,45 @@
         bg.style.transform = `translate(${x}px, ${y}px)`;
       });
     }
+
+    // Bouncing DVD-style logo. Changes color each time it hits a wall.
+    (function () {
+      const el = document.getElementById('dvd');
+      if (!el) return;
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { el.style.display = 'none'; return; }
+
+      const colors = ['#ff3b6b', '#25e07a', '#3d7bff', '#c04bff', '#22d3ee', '#ffb020'];
+      let ci = Math.floor(Math.random() * colors.length);
+      el.style.backgroundColor = colors[ci];
+
+      let w = el.offsetWidth, h = el.offsetHeight;
+      let x = Math.random() * Math.max(0, innerWidth  - w);
+      let y = Math.random() * Math.max(0, innerHeight - h);
+      const speed = 0.07;                 // px per ms (~70px/s, gentle)
+      let dx = Math.random() < .5 ? speed : -speed;
+      let dy = Math.random() < .5 ? speed : -speed;
+
+      addEventListener('resize', () => {
+        w = el.offsetWidth; h = el.offsetHeight;
+        x = Math.min(x, innerWidth - w);
+        y = Math.min(y, innerHeight - h);
+      });
+
+      let last = performance.now();
+      function tick(now) {
+        const dt = Math.min(now - last, 32); last = now;
+        x += dx * dt; y += dy * dt;
+        let hit = false;
+        if (x <= 0)              { x = 0;              dx =  Math.abs(dx); hit = true; }
+        else if (x + w >= innerWidth)  { x = innerWidth  - w; dx = -Math.abs(dx); hit = true; }
+        if (y <= 0)              { y = 0;              dy =  Math.abs(dy); hit = true; }
+        else if (y + h >= innerHeight) { y = innerHeight - h; dy = -Math.abs(dy); hit = true; }
+        if (hit) { ci = (ci + 1) % colors.length; el.style.backgroundColor = colors[ci]; }
+        el.style.transform = `translate(${x}px, ${y}px)`;
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    })();
   </script>
 </body>
 </html>
