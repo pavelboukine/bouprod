@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BOUPROD — Coming Soon</title>
+  <meta name="description" content="BOUPROD Audiovisual Production. Site under construction." />
+  <meta name="theme-color" content="#000000" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --r: #c81e42;
+      --g: #17a35a;
+      --b: #2352c9;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ---------- moving RGB gradient background ---------- */
+    .bg {
+      position: fixed;
+      inset: -15%;
+      z-index: 0;
+      overflow: hidden;
+      transition: transform .25s ease-out;
+    }
+
+    .orb {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 62vmax; height: 62vmax;
+      border-radius: 50%;
+      filter: blur(100px);
+      mix-blend-mode: screen;   /* additive RGB mixing on black */
+      opacity: .55;
+      will-change: transform;
+    }
+    .orb-r { background: radial-gradient(circle, var(--r) 0%, transparent 60%); animation: driftR 22s ease-in-out infinite; }
+    .orb-g { background: radial-gradient(circle, var(--g) 0%, transparent 60%); animation: driftG 27s ease-in-out infinite; }
+    .orb-b { background: radial-gradient(circle, var(--b) 0%, transparent 60%); animation: driftB 32s ease-in-out infinite; }
+
+    @keyframes driftR {
+      0%   { transform: translate(-70%, -80%); }
+      33%  { transform: translate(-10%, -30%); }
+      66%  { transform: translate(-90%, -10%); }
+      100% { transform: translate(-70%, -80%); }
+    }
+    @keyframes driftG {
+      0%   { transform: translate(-30%, -20%); }
+      33%  { transform: translate(-85%, -70%); }
+      66%  { transform: translate(-15%, -85%); }
+      100% { transform: translate(-30%, -20%); }
+    }
+    @keyframes driftB {
+      0%   { transform: translate(-90%, -50%); }
+      33%  { transform: translate(-25%, -75%); }
+      66%  { transform: translate(-70%, -15%); }
+      100% { transform: translate(-90%, -50%); }
+    }
+
+    /* vignette keeps it mostly black + focuses the center */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,.9) 100%);
+    }
+
+    /* ---------- content ---------- */
+    .stage {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      animation: rise 1.1s cubic-bezier(.2,.7,.2,1) both;
+    }
+
+    /* drop your logo file in the repo as logo.png (or .svg) */
+    .logo {
+      width: min(460px, 84vw);
+      height: auto;
+      filter: drop-shadow(0 0 34px rgba(255,255,255,.14));
+    }
+
+    /* shown only if logo.png is missing */
+    .wordmark {
+      font-size: clamp(44px, 9vw, 88px);
+      font-weight: 800;
+      letter-spacing: .06em;
+      background: linear-gradient(90deg, var(--r), var(--g), var(--b), var(--r));
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: hue 9s linear infinite;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      font-size: clamp(15px, 2.4vw, 22px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .34em;
+      padding-left: .34em;   /* recenter for the trailing letter-spacing */
+      color: #ededf2;
+    }
+    .status .dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--g);
+      box-shadow: 0 0 14px var(--g);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    .bar {
+      width: min(280px, 62vw);
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--r), var(--g), var(--b), var(--r));
+      background-size: 200% 100%;
+      animation: slide 5s linear infinite;
+      opacity: .9;
+    }
+
+    .tag {
+      font-size: clamp(13px, 1.9vw, 17px);
+      letter-spacing: .1em;
+      color: #9a9aa4;
+      max-width: 90vw;
+      line-height: 1.5;
+    }
+
+    /* ---------- keyframes ---------- */
+    @keyframes rise  { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+    @keyframes hue   { to { background-position: 300% 0; } }
+    @keyframes slide { to { background-position: 200% 0; } }
+    @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.7); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .orb, .wordmark, .bar, .dot, .stage { animation: none !important; }
+      .bg { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" id="bg">
+    <span class="orb orb-r"></span>
+    <span class="orb orb-g"></span>
+    <span class="orb orb-b"></span>
+  </div>
+  <div class="vignette"></div>
+
+  <main class="stage">
+    <img id="logo" class="logo" src="logo.png" alt="BOUPROD" />
+    <div class="wordmark" id="wordmark" hidden>BOUPROD</div>
+
+    <div class="status"><span class="dot"></span>Under Construction</div>
+    <div class="bar"></div>
+    <p class="tag">Creating special moments with sound and light</p>
+  </main>
+
+  <script>
+    // Fall back to the text wordmark if logo.png isn't in the repo yet.
+    const logo = document.getElementById('logo');
+    logo.addEventListener('error', () => {
+      logo.style.display = 'none';
+      document.getElementById('wordmark').hidden = false;
+    });
+
+    // Subtle cursor parallax on the background (skipped when reduced motion is on).
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const bg = document.getElementById('bg');
+      addEventListener('pointermove', (e) => {
+        const x = (e.clientX / innerWidth  - .5) * 26;
+        const y = (e.clientY / innerHeight - .5) * 26;
+        bg.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    }
+  </script>
+</body>
+</html>
